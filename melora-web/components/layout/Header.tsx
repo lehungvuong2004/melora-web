@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 
 export default function Header() {
 
@@ -37,11 +38,44 @@ export default function Header() {
         <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-green-500 shadow-sm border border-neutral-950"></span>
       </button>
 
-      <button className="flex items-center gap-2 rounded-full p-1 pr-3 bg-black hover:bg-neutral-800 transition border border-transparent text-neutral-300 hover:text-white">
-        <img src="https://i.pravatar.cc/150?img=11" alt="User Avatar" className="h-7 w-7 rounded-full object-cover" />
-        <span className="text-sm font-bold tracking-wide">Vương</span>
-        <i className="fa-solid fa-chevron-down text-xs ml-1"></i>
-      </button>
+      <div className="relative group">
+        <button className="flex items-center gap-2 rounded-full p-1 pr-3 bg-black group-hover:bg-neutral-800 transition border border-transparent text-neutral-300 group-hover:text-white cursor-pointer">
+          <img src="https://i.pravatar.cc/150?img=11" alt="User Avatar" className="h-7 w-7 rounded-full object-cover" />
+          <span className="text-sm font-bold tracking-wide">Vương</span>
+          <i className="fa-solid fa-chevron-down text-xs ml-1 transition-transform group-hover:rotate-180"></i>
+        </button>
+
+        {/* Dropdown Menu */}
+        <div className="absolute right-0 top-full mt-2 w-48 bg-neutral-900 border border-neutral-800 rounded-xl shadow-2xl shadow-black/50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 py-2">
+          <ul className="text-sm text-neutral-300">
+            <li>
+              <Link href="/auth/login" className="flex items-center gap-3 px-4 py-2 hover:bg-neutral-800 hover:text-white transition-colors">
+                <i className="fa-solid fa-arrow-right-to-bracket w-4 text-center"></i>
+                Đăng nhập
+              </Link>
+            </li>
+            <li>
+              <Link href="/auth/register" className="flex items-center gap-3 px-4 py-2 hover:bg-neutral-800 hover:text-white transition-colors">
+                <i className="fa-solid fa-user-plus w-4 text-center"></i>
+                Đăng ký
+              </Link>
+            </li>
+            <li className="border-t border-neutral-800 my-1 mx-2"></li>
+            <li>
+              <Link href="/profile" className="flex items-center gap-3 px-4 py-2 hover:bg-neutral-800 hover:text-white transition-colors">
+                <i className="fa-solid fa-user w-4 text-center"></i>
+                Hồ sơ
+              </Link>
+            </li>
+            <li>
+              <Link href="/settings" className="flex items-center gap-3 px-4 py-2 hover:bg-neutral-800 hover:text-white transition-colors">
+                <i className="fa-solid fa-gear w-4 text-center"></i>
+                Cài đặt
+              </Link>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   );
 

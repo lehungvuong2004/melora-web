@@ -39,7 +39,7 @@ CREATE TABLE users (
 
     email VARCHAR(255) NOT NULL UNIQUE,
 
-    password VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NULL,
 
     avatar_url VARCHAR(500),
 
@@ -784,6 +784,32 @@ CREATE TABLE password_reset_tokens (
     token VARCHAR(255) NOT NULL,
 
     created_at TIMESTAMP NULL DEFAULT NULL
+) ENGINE=InnoDB;
+
+
+-- ============================================================
+-- 23. SOCIAL_ACCOUNTS
+-- ============================================================
+
+CREATE TABLE social_accounts (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    user_id BIGINT UNSIGNED NOT NULL,
+
+    provider_name VARCHAR(50) NOT NULL,
+
+    provider_id VARCHAR(191) NOT NULL,
+
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_social_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    
+    UNIQUE INDEX idx_social_provider_id (provider_name, provider_id),
+    INDEX idx_social_user (user_id)
 ) ENGINE=InnoDB;
 
 
