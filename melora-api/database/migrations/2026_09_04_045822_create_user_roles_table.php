@@ -6,26 +6,26 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
-    {
-        Schema::create('user_roles', function (Blueprint $table) {
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
-            $table->unsignedBigInteger('role_id');
-            $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade')->onUpdate('cascade');
-            $table->timestamp('created_at')->nullable()->useCurrent();
-            $table->primary(['user_id', 'role_id']);
-        });
-    }
+  /**
+   * Run the migrations.
+   */
+  public function up(): void
+  {
+    Schema::create('user_roles', function (Blueprint $table) {
+      $table->unsignedBigInteger('user_id');
+      $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
+      $table->unsignedBigInteger('role_id');
+      $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade')->onUpdate('cascade');
+      $table->timestamp('created_at')->nullable()->useCurrent();
+      $table->primary(['user_id', 'role_id']);
+    });
+  }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::dropIfExists('user_roles');
-    }
+  /**
+   * Reverse the migrations.
+   */
+  public function down(): void
+  {
+    Schema::dropIfExists('user_roles');
+  }
 };

@@ -126,7 +126,14 @@ class AuthController extends Controller
 
           if ($socialAccount) {
               $user = User::find($socialAccount->user_id);
-          } else {
+              if (!$user) {
+                  // Orphan record due to manual DB manipulation. Fix it.
+                  DB::table('social_accounts')->where('id', $socialAccount->id)->delete();
+                  $socialAccount = null;
+              }
+          }
+
+          if (!$socialAccount) {
               $user = User::where('email', $googleUser->getEmail())->first();
               if (!$user) {
                   $user = User::create([
@@ -159,6 +166,7 @@ class AuthController extends Controller
           ]);
 
       } catch (Exception $e) {
+          \Illuminate\Support\Facades\Log::error('Google Login Error: ' . $e->getMessage());
           return response()->json(['message' => 'Invalid Google Token', 'error' => $e->getMessage()], 401);
       }
   }

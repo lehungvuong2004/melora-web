@@ -1,0 +1,59 @@
+services:
+  melora-api:
+    build:
+      context: ./melora-api
+      dockerfile: Dockerfile
+    container_name: melora_api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./melora-api:/app
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: melora_db
+      DB_USERNAME: root
+      DB_PASSWORD: rootpassword
+    depends_on:
+      - db
+    networks:
+      - melora_network
+
+  melora-web:
+    build:
+      context: ./melora-web
+      dockerfile: Dockerfile
+    container_name: melora_web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./melora-web:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    networks:
+      - melora_network
+
+  db:
+    image: mysql:8.0
+    container_name: melora_db
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: melora_db
+      MYSQL_ROOT_PASSWORD: rootpassword
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - melora_network
+
+networks:
+  melora_network:
+    driver: bridge
+
+volumes:
+  db_data:

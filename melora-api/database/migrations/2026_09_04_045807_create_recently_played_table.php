@@ -6,27 +6,27 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
-    {
-        Schema::create('recently_played', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
-            $table->unsignedBigInteger('song_id');
-            $table->foreign('song_id')->references('id')->on('songs')->onDelete('cascade')->onUpdate('cascade');
-            $table->timestamp('played_at')->useCurrent();
-            $table->index(['user_id', 'played_at']);
-        });
-    }
+  /**
+   * Run the migrations.
+   */
+  public function up(): void
+  {
+    Schema::create('recently_played', function (Blueprint $table) {
+      $table->id();
+      $table->unsignedBigInteger('user_id');
+      $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
+      $table->unsignedBigInteger('song_id');
+      $table->foreign('song_id')->references('id')->on('songs')->onDelete('cascade')->onUpdate('cascade');
+      $table->timestamp('played_at')->useCurrent();
+      $table->index(['user_id', 'played_at']);
+    });
+  }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::dropIfExists('recently_played');
-    }
+  /**
+   * Reverse the migrations.
+   */
+  public function down(): void
+  {
+    Schema::dropIfExists('recently_played');
+  }
 };
