@@ -15,7 +15,7 @@ services:
       DB_PORT: 3306
       DB_DATABASE: melora_db
       DB_USERNAME: root
-      DB_PASSWORD: rootpassword
+      DB_PASSWORD: 
     depends_on:
       - db
     networks:
@@ -42,10 +42,10 @@ services:
     container_name: melora_db
     restart: unless-stopped
     ports:
-      - "3306:3306"
+      - "3307:3306"
     environment:
       MYSQL_DATABASE: melora_db
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_ROOT_PASSWORD: 
     volumes:
       - db_data:/var/lib/mysql
     networks:

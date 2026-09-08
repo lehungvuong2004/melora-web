@@ -23,7 +23,7 @@ export default function LoginPage() {
         if (data.refresh_token) {
           localStorage.setItem("refresh_token", data.refresh_token);
         }
-        router.push("/");
+        window.location.href = "/";
       } catch (err: any) {
         setError(err.message || "Google Login failed");
       } finally {
@@ -47,7 +47,7 @@ export default function LoginPage() {
       if (data.refresh_token) {
         localStorage.setItem("refresh_token", data.refresh_token);
       }
-      router.push("/");
+      window.location.href = "/";
     } catch (err: any) {
       setError(err.message);
     } finally {
