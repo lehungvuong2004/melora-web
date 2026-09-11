@@ -845,5 +845,31 @@ VALUES
 
 
 -- ============================================================
+-- 24. WISHLISTS
+-- ============================================================
+
+CREATE TABLE wishlists (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    user_id BIGINT UNSIGNED NOT NULL,
+
+    wishlistable_type VARCHAR(255) NOT NULL,
+
+    wishlistable_id BIGINT UNSIGNED NOT NULL,
+
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_wishlists_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+
+    INDEX idx_wishlists_polymorphic (wishlistable_type, wishlistable_id),
+    UNIQUE INDEX wishlist_unique (user_id, wishlistable_type, wishlistable_id)
+) ENGINE=InnoDB;
+
+-- ============================================================
 -- END MELORA DATABASE
 -- ============================================================
