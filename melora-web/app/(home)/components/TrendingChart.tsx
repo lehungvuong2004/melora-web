@@ -16,6 +16,14 @@ export default function TrendingChart() {
       .catch((err) => console.log(err));
   }, []);
 
+  const playlistList = songs.map(s => ({
+    id: s.id,
+    title: s.title,
+    audio_url: s.audio_url,
+    cover_url: s.cover_url,
+    artist: s.artists && s.artists.length > 0 ? s.artists[0].name : "Unknown Artist"
+  }));
+
   return (
     <section className="mb-12">
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-4 px-1 gap-4">
@@ -34,7 +42,7 @@ export default function TrendingChart() {
           return (
             <div
               key={song.id}
-              onClick={() => playSong({ id: song.id, title: song.title, audio_url: song.audio_url, cover_url: song.cover_url, artist: artistName })}
+              onClick={() => playSong({ id: song.id, title: song.title, audio_url: song.audio_url, cover_url: song.cover_url, artist: artistName }, playlistList)}
               className="flex items-center gap-4 p-2 rounded-lg hover:bg-neutral-800/80 transition cursor-pointer group"
             >
               <span className={`text-xl font-bold w-6 text-center ${num <= 3 ? "text-green-500" : "text-neutral-500"}`}>{num < 10 ? `0${num}` : num}</span>

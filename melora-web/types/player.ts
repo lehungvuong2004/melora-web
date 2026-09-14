@@ -4,17 +4,24 @@ export type Song = {
   artist: string;
   audio_url: string;
   cover_url: string;
-  artists?: any[];
+  artists?: unknown[];
 };
 
 export type PlayerContextType = {
   currentSong: Song | null;
+  playlist: Song[];
   isPlaying: boolean;
   progress: number;
   duration: number;
-  playSong: (song: Song) => void;
+  playSong: (song: Song, newPlaylist?: Song[], forcePlay?: boolean) => void;
   togglePlayPause: () => void;
   seek: (value: number) => void;
   volume: number;
   setVolume: (value: number) => void;
+  playNext: () => void;
+  playPrev: () => void;
+  toggleShuffle: () => void;
+  isShuffle: boolean;
+  toggleRepeat: () => void;
+  repeatMode: "off" | "all" | "one";
 };

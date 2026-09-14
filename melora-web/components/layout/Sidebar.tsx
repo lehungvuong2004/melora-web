@@ -1,15 +1,21 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { songApi } from "@/api/songApi";
+import { usePlayer } from "@/context/PlayerContext";
 
 export default function Sidebar() {
-  const playlists = [
-    "Những Ngày Mưa Chill",
-    "V-Pop Indie Tinh Tuyển",
-    "Đêm Hà Nội Lofi",
-    "Gym Hype Vietnamese Rap",
-    "Acoustic Cafe Sài Gòn",
-    "Top 50 Việt Nam Hôm Nay",
-  ];
+  const [songs, setSongs] = useState<any[]>([]);
+  const { playSong } = usePlayer();
+
+  useEffect(() => {
+    songApi.getSongs()
+      .then((data: any) => {
+        setSongs(data.reverse().slice(0, 6)); 
+      })
+      .catch((err) => console.log(err));
+  }, []);
 
   const renderLogo = () => (
     <div className="flex items-center gap-2 mb-8 px-2">
@@ -75,15 +81,26 @@ export default function Sidebar() {
       </div>
 
       <div className="flex flex-col gap-3 px-4 overflow-y-auto pb-4 scrollbar-hide">
-        {playlists.map((playlist, index) => (
-          <Link
-            key={index}
-            href={`/playlist/${index}`}
-            className="text-sm font-medium text-neutral-400 hover:text-white transition whitespace-nowrap overflow-hidden text-ellipsis"
-          >
-            {playlist}
-          </Link>
-        ))}
+        {songs.map((song) => {
+          const formattedSong = {
+            id: song.id,
+            title: song.title,
+            audio_url: song.audio_url,
+            cover_url: song.cover_url,
+            artist: song.artists && song.artists.length > 0 ? song.artists[0].name : "Unknown Artist",
+          };
+          
+          return (
+            <button
+              key={song.id}
+              onClick={() => playSong(formattedSong, songs.map(s => ({...s, artist: s.artists?.[0]?.name || "Unknown Artist"})))}
+              className="text-left text-sm font-medium text-neutral-400 hover:text-white transition whitespace-nowrap overflow-hidden text-ellipsis flex items-center gap-2 group"
+            >
+              <i className="fa-solid fa-music text-[10px] opacity-0 group-hover:opacity-100 transition-opacity"></i>
+              <span className="truncate">{song.title}</span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

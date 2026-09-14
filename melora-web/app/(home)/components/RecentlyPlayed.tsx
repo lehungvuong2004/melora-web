@@ -9,12 +9,21 @@ export default function RecentlyPlayed() {
   const { playSong, currentSong, isPlaying } = usePlayer();
 
   useEffect(() => {
-    songApi.getSongs()
+    songApi
+      .getSongs()
       .then((data: any) => {
         setSongs(data.reverse().slice(0, 6));
       })
       .catch((err) => console.log(err));
   }, []);
+
+  const playlistList = songs.map((s) => ({
+    id: s.id,
+    title: s.title,
+    audio_url: s.audio_url,
+    cover_url: s.cover_url,
+    artist: s.artists && s.artists.length > 0 ? s.artists[0].name : "Unknown Artist",
+  }));
 
   return (
     <section className="mb-12">
@@ -33,7 +42,7 @@ export default function RecentlyPlayed() {
           return (
             <div
               key={song.id}
-              onClick={() => playSong({ id: song.id, title: song.title, audio_url: song.audio_url, cover_url: song.cover_url, artist: artistName })}
+              onClick={() => playSong({ id: song.id, title: song.title, audio_url: song.audio_url, cover_url: song.cover_url, artist: artistName }, playlistList)}
               className="bg-[#181818] hover:bg-[#282828] p-4 rounded-xl transition cursor-pointer group"
             >
               <div className="relative aspect-square w-full mb-3 rounded-md overflow-hidden shadow-lg">

@@ -28,11 +28,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <head>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
       </head>
-      <body className="h-screen flex flex-col overflow-hidden bg-black text-neutral-200">
+      <body suppressHydrationWarning className="h-screen flex flex-col overflow-hidden bg-black text-neutral-200">
         <PlayerProvider>
           <div className="flex-1 flex overflow-hidden">
             <Sidebar />

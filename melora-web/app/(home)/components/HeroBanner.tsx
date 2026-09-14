@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { songApi } from "@/api/songApi";
-import axiosClient from "@/api/axiosClient";
 import { usePlayer } from "@/context/PlayerContext";
+import WishlistButton from "@/components/ui/WishlistButton";
 
 export default function HeroBanner() {
   const [song, setSong] = useState<any>(null);
@@ -28,16 +28,7 @@ export default function HeroBanner() {
     return count;
   };
 
-  const handleAddToWishlist = async () => {
-    if (!song) return;
-    try {
-      const resp = await axiosClient.post("/me/wishlists", { type: "song", id: song.id });
-      const res = resp as { added?: boolean };
-      alert(res.added ? "Đã thêm vào Wishlist!" : "Đã xóa khỏi Wishlist!");
-    } catch {
-      alert("Đã xảy ra lỗi, vui lòng kiểm tra kết nối!");
-    }
-  };
+
 
   return (
     <section className="mb-12 pt-4">
@@ -88,12 +79,7 @@ export default function HeroBanner() {
             >
               <i className={`fa-solid ${currentSong?.id === song.id && isPlaying ? "fa-pause" : "fa-play"}`}></i> Phát ngay
             </button>
-            <button
-              onClick={handleAddToWishlist}
-              className="flex items-center gap-2 bg-neutral-800/80 hover:bg-neutral-700 text-white border border-neutral-600 px-6 py-3 rounded-full font-bold transition hover:scale-105 backdrop-blur-md cursor-pointer"
-            >
-              <i className="fa-regular fa-heart"></i> Thêm vào thư viện
-            </button>
+            <WishlistButton id={song.id} type="song" variant="button" />
           </div>
         </div>
       </div>
