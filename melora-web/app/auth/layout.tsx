@@ -14,8 +14,8 @@ export default function AuthLayout({
       {/* Left Column: Branding / Showcase */}
       <div className="relative hidden md:flex flex-col justify-between overflow-hidden bg-zinc-900 border-r border-zinc-800 p-10">
         <div className="absolute inset-0 z-0 opacity-30">
-          <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-purple-600 blur-[120px]" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-blue-600 blur-[120px]" />
+          <div className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 rounded-full bg-purple-600 blur-3xl" />
+          <div className="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 rounded-full bg-blue-600 blur-3xl" />
         </div>
 
         <div className="relative z-10 flex items-center gap-3">

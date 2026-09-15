@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import axiosClient from "@/api/axiosClient";
+import { useRouter } from "next/navigation";
 
 type WishlistButtonProps = {
   id: number;
@@ -13,9 +14,19 @@ type WishlistButtonProps = {
 export default function WishlistButton({ id, type = "song", variant = "icon", initialLiked = false }: WishlistButtonProps) {
   const [isLiked, setIsLiked] = useState(initialLiked);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleToggle = async (e: React.MouseEvent) => {
     e.stopPropagation();
+
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("auth_token");
+      if (!token) {
+        router.push("/auth/login");
+        return;
+      }
+    }
+
     if (loading) return;
 
     setLoading(true);
@@ -24,9 +35,13 @@ export default function WishlistButton({ id, type = "song", variant = "icon", in
       const res = resp as { added?: boolean };
 
       setIsLiked(res.added === true);
-      alert(res.added ? "Đã thêm vào Wishlist!" : "Đã xóa khỏi Wishlist!");
-    } catch {
-      alert("Đã xảy ra lỗi, vui lòng kiểm tra kết nối!");
+      alert(res.added ? "Đã thêm vào thư viện!" : "Đã xóa khỏi thư viện!");
+    } catch (err: any) {
+      if (err.response?.status === 401) {
+        router.push("/auth/login");
+      } else {
+        alert("Đã xảy ra lỗi, vui lòng kiểm tra kết nối!");
+      }
     } finally {
       setLoading(false);
     }

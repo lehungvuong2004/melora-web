@@ -1,12 +1,15 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import axiosClient from "@/api/axiosClient";
 import { usePlayer } from "@/context/PlayerContext";
 import { Song } from "@/types/player";
+import { useSearchParams } from "next/navigation";
 
-export default function SearchPage() {
-  const [query, setQuery] = useState("");
+function SearchPageContent() {
+  const searchParams = useSearchParams();
+  const initialQuery = searchParams.get("q") || "";
+  const [query, setQuery] = useState(initialQuery);
   const [results, setResults] = useState<{ songs: Song[]; artists: any[]; albums: any[]; playlists: any[] }>({
     songs: [],
     artists: [],
@@ -101,5 +104,13 @@ export default function SearchPage() {
         </section>
       )}
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div className="p-6 text-neutral-400">Đang tải...</div>}>
+      <SearchPageContent />
+    </Suspense>
   );
 }

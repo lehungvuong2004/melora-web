@@ -3,9 +3,11 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import SearchModal from "@/components/ui/SearchModal";
 
 export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -35,14 +37,15 @@ export default function Header() {
   );
 
   const renderSearchBar = () => (
-    <div className="relative group w-full max-w-sm md:max-w-md">
+    <div className="relative group w-full max-w-sm md:max-w-md cursor-pointer" onClick={() => setIsSearchModalOpen(true)}>
       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-        <i className="fa-solid fa-magnifying-glass text-neutral-400"></i>
+        <i className="fa-solid fa-magnifying-glass text-neutral-400 group-hover:text-white transition"></i>
       </div>
       <input
         type="text"
+        readOnly
         placeholder= "Tìm kiếm bài hát, nghệ sĩ, album hoặc podcast..."
-        className="w-full bg-neutral-900 hover:bg-neutral-800 focus:bg-neutral-800 text-neutral-100 text-sm rounded-full py-2.5 pl-10 pr-4 outline-none transition ring-1 ring-neutral-800 focus:ring-white/20 placeholder-neutral-400 font-medium truncate"
+        className="w-full bg-neutral-900 group-hover:bg-neutral-800 text-neutral-100 text-sm rounded-full py-2.5 pl-10 pr-4 outline-none transition ring-1 ring-neutral-800 group-hover:ring-white/20 placeholder-neutral-400 font-medium truncate cursor-pointer pointer-events-none"
       />
     </div>
   );
@@ -109,10 +112,17 @@ export default function Header() {
   };
 
   return (
-    <header className="grid grid-cols-[auto_1fr_auto] py-4 items-center gap-2 md:gap-4 px-6 sticky top-0 bg-neutral-950 z-50">
-      {renderNavButtons()}
-      {renderSearchBar()}
-      {renderProfileTools()}
-    </header>
+    <>
+      <header className="grid grid-cols-[auto_1fr_auto] py-4 items-center gap-2 md:gap-4 px-6 sticky top-0 bg-neutral-950 z-40">
+        {renderNavButtons()}
+        {renderSearchBar()}
+        {renderProfileTools()}
+      </header>
+
+      <SearchModal 
+        isOpen={isSearchModalOpen}
+        onClose={() => setIsSearchModalOpen(false)}
+      />
+    </>
   );
 }

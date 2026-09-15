@@ -35,12 +35,20 @@ axiosClient.interceptors.response.use(
   (error) => {
     let message = "Có lỗi xảy ra, vui lòng thử lại.";
 
-    if (error.response && error.response.data) {
-      const data = error.response.data;
-      message = data.message || (data.errors && data.errors[Object.keys(data.errors)[0]][0]) || message;
+    if (error.response) {
+      if (error.response.status === 401) {
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("auth_token");
+        }
+      }
+      if (error.response.data) {
+        const data = error.response.data;
+        message = data.message || (data.errors && data.errors[Object.keys(data.errors)[0]][0]) || message;
+      }
     }
 
-    return Promise.reject(new Error(message));
+    error.message = message;
+    return Promise.reject(error);
   },
 );
 

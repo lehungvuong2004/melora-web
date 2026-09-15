@@ -4,7 +4,7 @@ export type Song = {
   artist: string;
   audio_url: string;
   cover_url: string;
-  artists?: unknown[];
+  artists?: { name: string; [key: string]: any }[];
 };
 
 export type PlayerContextType = {
