@@ -1,19 +1,26 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+
+import localFont from "next/font/local";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
 import PlayerBar from "@/components/layout/PlayerBar";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const interFont = localFont({
+  src: [
+    { path: "../asset/font/Inter-Light.woff2", weight: "300", style: "normal" },
+    { path: "../asset/font/Inter-Regular.woff2", weight: "400", style: "normal" },
+    { path: "../asset/font/Inter-Medium.woff2", weight: "500", style: "normal" },
+    { path: "../asset/font/Inter-SemiBold.woff2", weight: "600", style: "normal" },
+    { path: "../asset/font/Inter-Bold.woff2", weight: "700", style: "normal" },
+    { path: "../asset/font/Inter-ExtraBold.woff2", weight: "800", style: "normal" },
+    { path: "../asset/font/Inter-Black.woff2", weight: "900", style: "normal" },
+  ],
+  variable: "--font-inter",
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -28,7 +35,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="en" suppressHydrationWarning className={`${interFont.variable} h-full antialiased`}>
       <head>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
       </head>

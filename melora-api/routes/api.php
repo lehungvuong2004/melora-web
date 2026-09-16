@@ -64,6 +64,7 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::get('payments', [PaymentController::class, 'index']);
   Route::post('payments', [PaymentController::class, 'store']);
   Route::get('payments/callback', [PaymentController::class, 'callback'])->withoutMiddleware('auth:sanctum');
+  Route::get('payments/vnpay-callback', [PaymentController::class, 'vnpayCallback'])->withoutMiddleware('auth:sanctum');
   Route::get('notifications', [NotificationController::class, 'index']);
   Route::post('notifications/{notification}/read', [NotificationController::class, 'markAsRead']);
   Route::post('notifications/read-all', [NotificationController::class, 'markAllAsRead']);

@@ -4,10 +4,12 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import SearchModal from "@/components/ui/SearchModal";
+import axiosClient from "@/api/axiosClient";
 
 export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [isLoadingPayment, setIsLoadingPayment] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -23,6 +25,35 @@ export default function Header() {
     localStorage.removeItem("refresh_token");
     setIsLoggedIn(false);
     router.push("/auth/login");
+  };
+
+  const handleUpgradePremium = async () => {
+    if (!isLoggedIn) {
+      router.push("/auth/login");
+      return;
+    }
+
+    setIsLoadingPayment(true);
+    try {
+      const response: any = await axiosClient.post("/payments", {
+        amount: 50000,
+        plan: "PREMIUM",
+        provider: "VNPAY",
+      });
+
+      const paymentUrl = response?.payment_url || response?.url || response?.data?.payment_url;
+
+      if (paymentUrl) {
+        window.location.href = paymentUrl;
+      } else {
+        alert("Không thể tạo liên kết thanh toán. Vui lòng thử lại.");
+      }
+    } catch (error) {
+      console.error("Payment error:", error);
+      alert("Đã xảy ra lỗi khi kết nối với VNPay.");
+    } finally {
+      setIsLoadingPayment(false);
+    }
   };
 
   const renderNavButtons = () => (
@@ -44,7 +75,7 @@ export default function Header() {
       <input
         type="text"
         readOnly
-        placeholder= "Tìm kiếm bài hát, nghệ sĩ, album hoặc podcast..."
+        placeholder="Tìm kiếm bài hát, nghệ sĩ, album hoặc podcast..."
         className="w-full bg-neutral-900 group-hover:bg-neutral-800 text-neutral-100 text-sm rounded-full py-2.5 pl-10 pr-4 outline-none transition ring-1 ring-neutral-800 group-hover:ring-white/20 placeholder-neutral-400 font-medium truncate cursor-pointer pointer-events-none"
       />
     </div>
@@ -66,8 +97,12 @@ export default function Header() {
 
     return (
       <div className="flex items-center gap-3 justify-end ml-2">
-        <button className="hidden sm:flex items-center justify-center gap-2 px-4 py-1.5 rounded-full border border-neutral-600 text-sm font-bold text-white hover:border-white hover:scale-105 transition">
-          Nâng cấp Premium
+        <button
+          onClick={handleUpgradePremium}
+          disabled={isLoadingPayment}
+          className="hidden sm:flex items-center justify-center gap-2 px-4 py-1.5 rounded-full border border-neutral-600 text-sm font-bold text-white hover:border-white hover:scale-105 transition disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isLoadingPayment ? <i className="fa-solid fa-spinner fa-spin"></i> : "Nâng cấp Premium"}
         </button>
 
         <button className="relative flex h-8 w-8 items-center justify-center rounded-full group hover:bg-neutral-800 transition text-neutral-300 hover:text-white">
@@ -119,10 +154,7 @@ export default function Header() {
         {renderProfileTools()}
       </header>
 
-      <SearchModal 
-        isOpen={isSearchModalOpen}
-        onClose={() => setIsSearchModalOpen(false)}
-      />
+      <SearchModal isOpen={isSearchModalOpen} onClose={() => setIsSearchModalOpen(false)} />
     </>
   );
 }

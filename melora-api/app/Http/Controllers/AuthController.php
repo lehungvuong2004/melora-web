@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use GuzzleHttp\Client;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Exception;
 
 class AuthController extends Controller
@@ -189,7 +190,7 @@ class AuthController extends Controller
       return $this->errorResponse('Dữ liệu không hợp lệ', 422, $validator->errors()->toArray());
     }
 
-    $token = Str::random(64);
+    $token = (string) random_int(100000, 999999);
 
     DB::table('password_reset_tokens')->updateOrInsert(
       ['email' => $request->email],
@@ -199,10 +200,18 @@ class AuthController extends Controller
       ]
     );
 
-    // TODO: Send email with token. This is just an API placeholder
-    return $this->successResponse([
-      'token' => $token // In production, don't return the token in API response, send via email.
-    ], 'Tạo mã khôi phục mật khẩu thành công');
+    try {
+      Mail::raw("Chào bạn,\n\nMã xác nhận để đặt lại mật khẩu tài khoản Melora của bạn là: {$token}\n\nVui lòng không chia sẻ mã này cho bất kỳ ai. Mã này sẽ hết hạn trong thời gian ngắn.\n\nTrân trọng,\nĐội ngũ Melora", function ($message) use ($request) {
+        $message->to($request->email)
+          ->subject('Mã Khôi Phục Mật Khẩu - Melora');
+      });
+    } catch (\Exception $e) {
+      Log::error('Lỗi khi gửi email: ' . $e->getMessage());
+      // Revert if need, but usually we just return error
+      return $this->errorResponse('Không thể gửi mã khôi phục qua email. Vui lòng thử lại sau', 500);
+    }
+
+    return $this->successResponse(null, 'Mã khôi phục đã được gửi đến email của bạn');
   }
 
   public function resetPassword(Request $request)
