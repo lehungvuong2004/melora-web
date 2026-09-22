@@ -12,11 +12,22 @@ export default function Header() {
   const [isLoadingPayment, setIsLoadingPayment] = useState(false);
   const router = useRouter();
 
+  const [user, setUser] = useState<any>(null);
+
   useEffect(() => {
-    // Check authentication status
     const token = localStorage.getItem("auth_token");
     if (token) {
       setIsLoggedIn(true);
+      axiosClient
+        .get("/auth/me")
+        .then((res: any) => {
+          let userData = res;
+          if (res?.data?.data) userData = res.data.data;
+          else if (res?.data) userData = res.data;
+          else if (res?.user) userData = res.user;
+          setUser(userData);
+        })
+        .catch(() => {});
     }
   }, []);
 
@@ -100,7 +111,7 @@ export default function Header() {
         <button
           onClick={handleUpgradePremium}
           disabled={isLoadingPayment}
-          className="hidden sm:flex items-center justify-center gap-2 px-4 py-1.5 rounded-full border border-neutral-600 text-sm font-bold text-white hover:border-white hover:scale-105 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          className="hidden sm:flex items-center justify-center gap-2 px-4 py-1.5 rounded-full border border-neutral-600 text-sm font-bold text-white hover:border-white hover:scale-105 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           {isLoadingPayment ? <i className="fa-solid fa-spinner fa-spin"></i> : "Nâng cấp Premium"}
         </button>
@@ -112,8 +123,8 @@ export default function Header() {
 
         <div className="relative group">
           <button className="flex items-center gap-2 rounded-full p-1 pr-3 bg-black group-hover:bg-neutral-800 transition border border-transparent text-neutral-300 group-hover:text-white cursor-pointer">
-            <img src="https://i.pravatar.cc/150?img=11" alt="User Avatar" className="h-7 w-7 rounded-full object-cover" />
-            <span className="text-sm font-bold tracking-wide">Vương</span>
+            <img src={user?.avatar_url || "https://i.pravatar.cc/150?img=11"} alt="User Avatar" className="h-7 w-7 rounded-full object-cover" />
+            <span className="text-sm font-bold tracking-wide">{user?.name || "Người dùng"}</span>
             <i className="fa-solid fa-chevron-down text-xs ml-1 transition-transform group-hover:rotate-180"></i>
           </button>
 

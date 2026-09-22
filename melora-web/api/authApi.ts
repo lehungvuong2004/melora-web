@@ -20,4 +20,12 @@ export const authApi = {
   resetPassword: (payload: any) => {
     return axiosClient.post('/auth/reset-password', payload);
   },
+
+  updateProfile: (payload: any) => {
+    return axiosClient.put('/auth/me', payload);
+  },
+
+  updatePassword: (payload: any) => {
+    return axiosClient.put('/auth/me/password', payload);
+  },
 };

@@ -240,4 +240,49 @@ class AuthController extends Controller
 
     return $this->successResponse(null, 'Khôi phục mật khẩu thành công');
   }
+
+  public function updateProfile(Request $request)
+  {
+    $user = $request->user();
+    
+    $validator = Validator::make($request->all(), [
+      'name' => 'required|string|max:100',
+    ]);
+
+    if ($validator->fails()) {
+      return $this->errorResponse('Dữ liệu không hợp lệ', 422, $validator->errors()->toArray());
+    }
+
+    $user->name = $request->name;
+    if ($request->has('avatar_url')) {
+      $user->avatar_url = $request->avatar_url;
+    }
+    
+    $user->save();
+
+    return $this->successResponse($user, 'Cập nhật hồ sơ thành công');
+  }
+
+  public function updatePassword(Request $request)
+  {
+    $user = $request->user();
+
+    $validator = Validator::make($request->all(), [
+      'current_password' => 'required|string',
+      'password' => 'required|string|min:6|confirmed'
+    ]);
+
+    if ($validator->fails()) {
+      return $this->errorResponse('Dữ liệu không hợp lệ', 422, $validator->errors()->toArray());
+    }
+
+    if (!Hash::check($request->current_password, $user->password)) {
+      return $this->errorResponse('Mật khẩu hiện tại không chính xác', 400);
+    }
+
+    $user->password = Hash::make($request->password);
+    $user->save();
+
+    return $this->successResponse(null, 'Đổi mật khẩu thành công');
+  }
 }
