@@ -24,4 +24,5 @@ export type PlayerContextType = {
   isShuffle: boolean;
   toggleRepeat: () => void;
   repeatMode: "off" | "all" | "one";
+  addToQueue: (song: Song) => void;
 };

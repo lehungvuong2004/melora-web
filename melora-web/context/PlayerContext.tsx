@@ -214,6 +214,13 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
     });
   }, []);
 
+  const addToQueue = useCallback((song: Song) => {
+    setPlaylist((prev) => {
+      if (prev.find((s) => s.id === song.id)) return prev;
+      return [...prev, song];
+    });
+  }, []);
+
   return (
     <PlayerContext.Provider
       value={{
@@ -233,6 +240,7 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
         isShuffle,
         toggleRepeat,
         repeatMode,
+        addToQueue,
       }}
     >
       {children}

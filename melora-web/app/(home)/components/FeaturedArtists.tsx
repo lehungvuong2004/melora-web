@@ -24,7 +24,7 @@ export default function FeaturedArtists() {
       <h3 className="text-xl font-bold text-white flex items-center gap-2">
         <div className="w-1 h-5 bg-green-500 rounded-full"></div> Nghệ Sĩ Nổi Bật
       </h3>
-      <Link href="/search" className="text-sm font-semibold text-green-500 hover:text-green-400 transition group border border-green-500/30 px-3 py-1 rounded-full hover:bg-green-500/10">
+      <Link href="/search" className="cursor-pointer text-sm font-semibold text-green-500 hover:text-green-400 transition group border border-green-500/30 px-3 py-1 rounded-full hover:bg-green-500/10">
         Khám phá thêm <i className="fa-solid fa-chevron-right text-xs ml-1 transition-transform group-hover:translate-x-1"></i>
       </Link>
     </div>
@@ -48,7 +48,7 @@ export default function FeaturedArtists() {
                 {artist.name} {artist.is_verified || true ? <i className="fa-solid fa-circle-check text-blue-500 text-xs shrink-0"></i> : null}
               </h4>
               <p className="text-neutral-500 text-xs mb-2">{listeners} Người nghe</p>
-              <button className="px-4 py-1 rounded-full border border-neutral-600 text-xs font-bold text-white hover:border-white transition">Theo dõi</button>
+              <button className="cursor-pointer px-4 py-1 rounded-full border border-neutral-600 text-xs font-bold text-white hover:border-white transition">Theo dõi</button>
             </div>
           );
         })
