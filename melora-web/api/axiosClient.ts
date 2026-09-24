@@ -6,7 +6,7 @@ const axiosClient = axios.create({
     "Content-Type": "application/json",
     "Accept": "application/json",
   },
-  timeout: 10000,
+  timeout: 60000,
 });
 
 axiosClient.interceptors.request.use(
@@ -24,7 +24,6 @@ axiosClient.interceptors.request.use(
 
 axiosClient.interceptors.response.use(
   (response) => {
-    // If our backend sent standard ApiResponse, unwrap it
     if (response && response.data !== undefined) {
       if (typeof response.data.success === "boolean" && response.data.success) {
         return response.data.data;
