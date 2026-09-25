@@ -26,10 +26,14 @@ class ReportController extends Controller
     return $this->successResponse($report, 'Report submitted successfully', 201);
   }
 
-  // Admin routes
   public function index(Request $request)
   {
-    $reports = Report::with(['user'])->latest()->paginate(20);
+    $status = $request->query('status');
+    $query = Report::with(['user', 'song', 'artist', 'playlist'])->latest();
+    if ($status) {
+      $query->where('status', $status);
+    }
+    $reports = $query->paginate(20);
     return $this->successResponse($reports);
   }
 

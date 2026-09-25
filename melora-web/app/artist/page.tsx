@@ -1,6 +1,45 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { artistApi } from "@/api/artistApi";
+import Link from "next/link";
 
 export default function ArtistDashboardPage() {
+  const [stats, setStats] = useState({
+    followers: 0,
+    streams: 0,
+    songsCount: 0,
+    monthlyListeners: 0
+  });
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res: any = await artistApi.getStats();
+        if (res.data) {
+          setStats({
+            followers: res.data.followers || 0,
+            streams: res.data.streams || 0,
+            songsCount: res.data.songsCount || 0,
+            monthlyListeners: res.data.monthlyListeners || 0
+          });
+        }
+      } catch (error) {
+        console.error("Lỗi khi tải thông kê:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  if (isLoading) {
+    return <div className="text-zinc-400 py-10 text-center">Đang tải bảng điều khiển...</div>;
+  }
+
   return (
     <div className="space-y-8">
       <div>
@@ -11,21 +50,19 @@ export default function ArtistDashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="p-6 bg-zinc-900/50 hover:bg-zinc-900 transition border border-zinc-800 rounded-2xl">
           <h3 className="text-zinc-400 font-medium mb-1 text-sm uppercase tracking-wider">Người nghe tháng này</h3>
-          <p className="text-3xl font-bold text-white">45,120</p>
-          <p className="text-green-400 text-sm mt-2"><i className="fa-solid fa-arrow-trend-up mr-1"></i>+12%</p>
+          <p className="text-3xl font-bold text-white">{stats.monthlyListeners.toLocaleString()}</p>
         </div>
         <div className="p-6 bg-zinc-900/50 hover:bg-zinc-900 transition border border-zinc-800 rounded-2xl">
-          <h3 className="text-zinc-400 font-medium mb-1 text-sm uppercase tracking-wider">Lượt streams</h3>
-          <p className="text-3xl font-bold text-white">128,940</p>
-          <p className="text-green-400 text-sm mt-2"><i className="fa-solid fa-arrow-trend-up mr-1"></i>+8.4%</p>
+          <h3 className="text-zinc-400 font-medium mb-1 text-sm uppercase tracking-wider">Lượt streams (Tổng)</h3>
+          <p className="text-3xl font-bold text-white">{stats.streams.toLocaleString()}</p>
         </div>
         <div className="p-6 bg-zinc-900/50 hover:bg-zinc-900 transition border border-zinc-800 rounded-2xl">
           <h3 className="text-zinc-400 font-medium mb-1 text-sm uppercase tracking-wider">Lượt theo dõi (Followers)</h3>
-          <p className="text-3xl font-bold text-white">8,450</p>
+          <p className="text-3xl font-bold text-white">{stats.followers.toLocaleString()}</p>
         </div>
         <div className="p-6 bg-zinc-900/50 hover:bg-zinc-900 transition border border-zinc-800 rounded-2xl">
-          <h3 className="text-zinc-400 font-medium mb-1 text-sm uppercase tracking-wider">Lượt thêm vào Playlist</h3>
-          <p className="text-3xl font-bold text-white">1,200</p>
+          <h3 className="text-zinc-400 font-medium mb-1 text-sm uppercase tracking-wider">Số bài hát đã Tải lên</h3>
+          <p className="text-3xl font-bold text-white">{stats.songsCount.toLocaleString()}</p>
         </div>
       </div>
       
@@ -35,9 +72,11 @@ export default function ArtistDashboardPage() {
           <h3 className="text-2xl font-bold text-white mb-2">Phát hành đĩa đơn tiếp theo?</h3>
           <p className="text-zinc-300">Tải nhạc của bạn lên Melora và kết nối với hàng triệu người nghe đam mê âm nhạc.</p>
         </div>
-        <button className="px-8 py-4 bg-white text-black font-bold rounded-full hover:scale-105 transition">
-          Tạo bản phát hành mới
-        </button>
+        <Link href="/artist/music">
+          <button className="px-8 py-4 bg-white text-black font-bold rounded-full hover:scale-105 transition cursor-pointer">
+            Tạo bản phát hành mới
+          </button>
+        </Link>
       </div>
     </div>
   );

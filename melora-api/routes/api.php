@@ -16,9 +16,12 @@ use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\SongController as AdminSongController;
 
 Route::get('search', [SearchController::class, 'search']);
 Route::get('songs/top', [SongController::class, 'top']);
+Route::post('songs/{song}/played', [SongController::class, 'recordPlay']);
 Route::apiResource('songs', SongController::class);
 
 Route::prefix('auth')->group(function () {
@@ -74,9 +77,25 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('reports', [ReportController::class, 'store']);
 });
 
-// Admin routes (should have middleware admin)
+Route::middleware('auth:sanctum')->prefix('artist')->group(function () {
+    Route::get('stats', [\App\Http\Controllers\Artist\ArtistWorkspaceController::class, 'stats']);
+    Route::get('audience', [\App\Http\Controllers\Artist\ArtistWorkspaceController::class, 'audience']);
+    Route::get('songs', [\App\Http\Controllers\Artist\ArtistWorkspaceController::class, 'mySongs']);
+    Route::post('songs', [\App\Http\Controllers\Artist\ArtistWorkspaceController::class, 'uploadSong']);
+    Route::put('songs/{id}', [\App\Http\Controllers\Artist\ArtistWorkspaceController::class, 'updateSong']);
+    Route::delete('songs/{id}', [\App\Http\Controllers\Artist\ArtistWorkspaceController::class, 'deleteSong']);
+    Route::post('profile', [\App\Http\Controllers\Artist\ArtistWorkspaceController::class, 'updateProfile']);
+});
+
 Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
   Route::get('stats', [DashboardController::class, 'stats']);
+
   Route::get('reports', [ReportController::class, 'index']);
   Route::put('reports/{report}', [ReportController::class, 'update']);
+  Route::apiResource('notifications', \App\Http\Controllers\Admin\NotificationController::class);
+
+  Route::apiResource('users', AdminUserController::class);
+
+  Route::apiResource('songs', AdminSongController::class);
+  Route::put('songs/{song}/approve', [AdminSongController::class, 'approve']);
 });

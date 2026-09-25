@@ -25,7 +25,6 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Refs for current states to use inside event listeners
   const stateRef = useRef({
     currentSong,
     playlist,
@@ -70,6 +69,18 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
 
   const handleEnded = useCallback(() => {
     const { currentSong: song, playlist: list, isShuffle: shuffle, repeatMode: repeat } = stateRef.current;
+
+    // Ghi nhận lượt nghe hoàn thành (chỉ khi người dùng nghe hết)
+    if (song?.id && typeof window !== "undefined") {
+      const token = localStorage.getItem("auth_token");
+      fetch(`http://localhost:8000/api/songs/${song.id}/played`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      }).catch(() => {}); // Fire-and-forget, không block UI
+    }
 
     if (repeat === "one") {
       if (audioRef.current) {

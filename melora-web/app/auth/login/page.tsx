@@ -13,17 +13,28 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const handleLoginSuccess = (data: any) => {
+    localStorage.setItem("auth_token", data.access_token);
+    if (data.refresh_token) {
+      localStorage.setItem("refresh_token", data.refresh_token);
+    }
+      const roles = data.user?.roles?.map((r: any) => r.name) || [];
+    if (roles.includes("ADMIN")) {
+      router.push("/admin");
+    } else if (roles.includes("ARTIST")) {
+      router.push("/artist");
+    } else {
+      router.push("/");
+    }
+  };
+
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       setIsLoading(true);
       setError("");
       try {
         const data: any = await authApi.googleAuth(tokenResponse.access_token);
-        localStorage.setItem("auth_token", data.access_token);
-        if (data.refresh_token) {
-          localStorage.setItem("refresh_token", data.refresh_token);
-        }
-        window.location.href = "/";
+        handleLoginSuccess(data);
       } catch (err: any) {
         setError(err.message || "Google Login failed");
       } finally {
@@ -43,11 +54,7 @@ export default function LoginPage() {
     try {
       const data: any = await authApi.login({ email, password });
       
-      localStorage.setItem("auth_token", data.access_token);
-      if (data.refresh_token) {
-        localStorage.setItem("refresh_token", data.refresh_token);
-      }
-      window.location.href = "/";
+      handleLoginSuccess(data);
     } catch (err: any) {
       setError(err.message);
     } finally {

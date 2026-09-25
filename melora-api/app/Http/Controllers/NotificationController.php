@@ -19,13 +19,13 @@ class NotificationController extends Controller
       return $this->errorResponse('Unauthorized', 403);
     }
 
-    $notification->update(['status' => 'READ']);
+    $notification->update(['is_read' => true]);
     return $this->successResponse($notification, 'Notification marked as read');
   }
 
   public function markAllAsRead(Request $request)
   {
-    $request->user()->notifications()->where('status', 'UNREAD')->update(['status' => 'READ']);
+    $request->user()->notifications()->where('is_read', false)->update(['is_read' => true]);
     return $this->successResponse(null, 'All notifications marked as read');
   }
 }

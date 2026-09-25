@@ -17,6 +17,12 @@ axiosClient.interceptors.request.use(
         config.headers.Authorization = `Bearer ${token}`;
       }
     }
+    
+    // Auto detect FormData and remove Content-Type so browser can set boundary
+    if (config.data instanceof FormData) {
+      delete config.headers["Content-Type"];
+    }
+
     return config;
   },
   (error) => Promise.reject(error),
@@ -39,6 +45,7 @@ axiosClient.interceptors.response.use(
       if (error.response.status === 401) {
         if (typeof window !== "undefined") {
           localStorage.removeItem("auth_token");
+          window.location.href = "/"; 
         }
       }
       if (error.response.data) {

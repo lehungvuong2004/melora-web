@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Artist extends Model
 {
     protected $fillable = [
-        'name', 'slug', 'bio', 'avatar_url', 'cover_url', 'country', 'is_verified', 'monthly_listeners'
+        'user_id', 'name', 'slug', 'bio', 'avatar_url', 'cover_url', 'country', 'is_verified', 'monthly_listeners'
     ];
 
     protected $casts = [

@@ -13,11 +13,22 @@ export default function Header() {
   const router = useRouter();
 
   const [user, setUser] = useState<any>(null);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [isNotifDropdownOpen, setIsNotifDropdownOpen] = useState(false);
+
+  const fetchNotifications = async () => {
+    try {
+      const res: any = await axiosClient.get("/notifications");
+      setNotifications(res?.data?.data || res?.data || []);
+    } catch (error) {
+      console.error("Failed to fetch notifications");
+    }
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
     if (token) {
-      setIsLoggedIn(true);
+      setTimeout(() => setIsLoggedIn(true), 0);
       axiosClient
         .get("/auth/me")
         .then((res: any) => {
@@ -28,8 +39,30 @@ export default function Header() {
           setUser(userData);
         })
         .catch(() => {});
+        
+      fetchNotifications();
     }
   }, []);
+
+  const markAllAsRead = async () => {
+    try {
+      await axiosClient.post("/notifications/read-all");
+      setNotifications(prev => prev.map(n => ({...n, is_read: true})));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const markAsRead = async (id: number) => {
+    try {
+      await axiosClient.post(`/notifications/${id}/read`);
+      setNotifications(prev => prev.map(n => n.id === id ? {...n, is_read: true} : n));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const unreadCount = notifications.filter(n => !n.is_read).length;
 
   const handleLogout = () => {
     localStorage.removeItem("auth_token");
@@ -116,10 +149,53 @@ export default function Header() {
           {isLoadingPayment ? <i className="fa-solid fa-spinner fa-spin"></i> : "Nâng cấp Premium"}
         </button>
 
-        <button className="relative flex h-8 w-8 items-center justify-center rounded-full group hover:bg-neutral-800 transition text-neutral-300 hover:text-white">
-          <i className="fa-solid fa-bell text-lg"></i>
-          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-green-500 shadow-sm border border-neutral-950"></span>
-        </button>
+        <div className="relative">
+          <button 
+            onClick={() => setIsNotifDropdownOpen(!isNotifDropdownOpen)}
+            onBlur={() => setTimeout(() => setIsNotifDropdownOpen(false), 200)}
+            className={`relative flex h-8 w-8 items-center justify-center rounded-full transition cursor-pointer ${isNotifDropdownOpen ? "bg-neutral-800 text-white" : "hover:bg-neutral-800 text-neutral-300 hover:text-white"}`}
+          >
+            <i className="fa-solid fa-bell text-lg"></i>
+            {unreadCount > 0 && (
+              <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-green-500 shadow-sm border border-neutral-950"></span>
+            )}
+          </button>
+          
+          {isNotifDropdownOpen && (
+            <div className="absolute right-0 top-full mt-2 w-80 bg-neutral-900 border border-neutral-800 rounded-xl shadow-2xl shadow-black/50 z-50 overflow-hidden transform opacity-100 scale-100 transition-all origin-top-right">
+              <div className="p-3 border-b border-neutral-800 flex justify-between items-center">
+                <span className="font-bold text-white">Xóa cảnh báo</span>
+                {unreadCount > 0 && (
+                  <button onClick={markAllAsRead} className="text-xs text-neutral-400 hover:text-white transition">
+                    Đánh dấu đã đọc
+                  </button>
+                )}
+              </div>
+              <div className="max-h-[300px] overflow-y-auto">
+                {notifications.length === 0 ? (
+                  <div className="p-6 text-center text-sm text-neutral-500">Chưa có thông báo nào</div>
+                ) : (
+                  notifications.map(n => (
+                    <div 
+                      key={n.id} 
+                      onClick={() => !n.is_read && markAsRead(n.id)}
+                      className={`p-3 border-b border-neutral-800/50 hover:bg-neutral-800 cursor-pointer transition ${!n.is_read ? "bg-neutral-800/30" : "opacity-70"}`}
+                    >
+                      <div className="flex gap-2 items-start">
+                        {!n.is_read && <span className="h-2 w-2 mt-1.5 rounded-full bg-green-500 shrink-0"></span>}
+                        <div>
+                          <div className={`text-sm ${!n.is_read ? 'font-bold text-white' : 'font-medium text-neutral-300'}`}>{n.title}</div>
+                          <div className="text-xs text-neutral-400 mt-1 line-clamp-2">{n.message}</div>
+                          <div className="text-[10px] text-neutral-500 mt-1">{new Date(n.created_at).toLocaleString("vi-VN")}</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+        </div>
 
         <div className="relative group">
           <button className="flex items-center gap-2 rounded-full p-1 pr-3 bg-black group-hover:bg-neutral-800 transition border border-transparent text-neutral-300 group-hover:text-white cursor-pointer">
@@ -128,9 +204,24 @@ export default function Header() {
             <i className="fa-solid fa-chevron-down text-xs ml-1 transition-transform group-hover:rotate-180"></i>
           </button>
 
-          {/* Dropdown Menu */}
           <div className="absolute right-0 top-full mt-2 w-48 bg-neutral-900 border border-neutral-800 rounded-xl shadow-2xl shadow-black/50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 py-2">
             <ul className="text-sm text-neutral-300">
+              {user?.roles?.some((r: any) => r.name === "ADMIN") && (
+                <li>
+                  <Link href="/admin" className="flex items-center gap-3 px-4 py-2 hover:bg-neutral-800 hover:text-white transition-colors">
+                    <i className="fa-solid fa-chart-line w-4 text-center"></i>
+                    Dashboard Admin
+                  </Link>
+                </li>
+              )}
+              {user?.roles?.some((r: any) => r.name === "ARTIST") && (
+                <li>
+                  <Link href="/artist" className="flex items-center gap-3 px-4 py-2 hover:bg-neutral-800 hover:text-white transition-colors">
+                    <i className="fa-solid fa-music w-4 text-center"></i>
+                    Dashboard Artist
+                  </Link>
+                </li>
+              )}
               <li>
                 <Link href="/profile" className="flex items-center gap-3 px-4 py-2 hover:bg-neutral-800 hover:text-white transition-colors">
                   <i className="fa-solid fa-user w-4 text-center"></i>

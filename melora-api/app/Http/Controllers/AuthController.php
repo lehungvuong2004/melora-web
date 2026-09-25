@@ -73,6 +73,8 @@ class AuthController extends Controller
     $accessToken = $user->createToken('access_token', ['access-api'], now()->addHours(2))->plainTextToken;
     $refreshToken = $user->createToken('refresh_token', ['issue-access-token'], now()->addDays(30))->plainTextToken;
 
+    $user->load('roles');
+
     return $this->successResponse([
       'access_token' => $accessToken,
       'refresh_token' => $refreshToken,
@@ -156,6 +158,8 @@ class AuthController extends Controller
 
       $accessToken = $user->createToken('access_token', ['access-api'], now()->addHours(2))->plainTextToken;
       $refreshToken = $user->createToken('refresh_token', ['issue-access-token'], now()->addDays(30))->plainTextToken;
+
+      $user->load('roles');
 
       return $this->successResponse([
         'access_token' => $accessToken,

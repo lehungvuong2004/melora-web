@@ -61,4 +61,10 @@ class SongController extends Controller
             return $this->successResponse(['liked' => true], 'Song liked');
         }
     }
+
+    public function recordPlay(Song $song)
+    {
+        $song->increment('play_count');
+        return $this->successResponse(['play_count' => $song->play_count], 'Đã ghi nhận lượt nghe');
+    }
 }

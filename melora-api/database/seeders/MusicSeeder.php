@@ -54,15 +54,17 @@ class MusicSeeder extends Seeder
         ];
 
         foreach ($songs as $s) {
-            $song = Song::create([
-                'title' => $s['title'],
-                'slug' => Str::slug($s['title']),
-                'audio_url' => "http://localhost:8000" . $s['audio_url'],
-                'cover_url' => $s['cover_url'],
-                'duration_seconds' => $s['duration_seconds'],
-                'status' => 'ACTIVE'
-            ]);
-            $song->artists()->attach($s['artist']->id, ['is_primary' => true]);
+            $song = Song::updateOrCreate(
+                ['slug' => Str::slug($s['title'])],
+                [
+                    'title' => $s['title'],
+                    'audio_url' => "http://localhost:8000" . $s['audio_url'],
+                    'cover_url' => $s['cover_url'],
+                    'duration_seconds' => $s['duration_seconds'],
+                    'status' => 'PUBLISHED'
+                ]
+            );
+            $song->artists()->syncWithoutDetaching([$s['artist']->id => ['is_primary' => true]]);
         }
     }
 }
