@@ -11,9 +11,6 @@ use Illuminate\Support\Facades\Storage;
 
 class ArtistWorkspaceController extends Controller
 {
-    /**
-     * Helper to get or create the artist profile for the current user.
-     */
     private function getArtist(Request $request)
     {
         $user = $request->user();
@@ -108,13 +105,13 @@ class ArtistWorkspaceController extends Controller
             'audio.file' => 'File âm thanh không hợp lệ.',
         ]);
 
-        $audioPath = $request->file('audio')->store('public/songs/audio');
-        $audioUrl = url(Storage::url($audioPath));
+        $audioPath = $request->file('audio')->store('songs/audio', 'public');
+        $audioUrl = url(Storage::disk('public')->url($audioPath));
 
         $coverUrl = null;
         if ($request->hasFile('cover')) {
-            $coverPath = $request->file('cover')->store('public/songs/covers');
-            $coverUrl = url(Storage::url($coverPath));
+            $coverPath = $request->file('cover')->store('songs/covers', 'public');
+            $coverUrl = url(Storage::disk('public')->url($coverPath));
         }
 
         $song = Song::create([

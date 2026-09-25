@@ -4,7 +4,7 @@ const axiosClient = axios.create({
   baseURL: "http://localhost:8000/api",
   headers: {
     "Content-Type": "application/json",
-    "Accept": "application/json",
+    Accept: "application/json",
   },
   timeout: 60000,
 });
@@ -17,8 +17,6 @@ axiosClient.interceptors.request.use(
         config.headers.Authorization = `Bearer ${token}`;
       }
     }
-    
-    // Auto detect FormData and remove Content-Type so browser can set boundary
     if (config.data instanceof FormData) {
       delete config.headers["Content-Type"];
     }
@@ -39,19 +37,23 @@ axiosClient.interceptors.response.use(
     return response;
   },
   (error) => {
+    if (!error.response) {
+      error.message = "Không thể kết nối đến máy chủ. Vui lòng kiểm tra backend đang chạy.";
+      return Promise.reject(error);
+    }
+
     let message = "Có lỗi xảy ra, vui lòng thử lại.";
 
-    if (error.response) {
-      if (error.response.status === 401) {
-        if (typeof window !== "undefined") {
-          localStorage.removeItem("auth_token");
-          window.location.href = "/"; 
-        }
+    if (error.response.status === 401) {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("auth_token");
+        window.location.href = "/";
       }
-      if (error.response.data) {
-        const data = error.response.data;
-        message = data.message || (data.errors && data.errors[Object.keys(data.errors)[0]][0]) || message;
-      }
+    }
+
+    if (error.response.data) {
+      const data = error.response.data;
+      message = data.message || (data.errors && data.errors[Object.keys(data.errors)[0]][0]) || message;
     }
 
     error.message = message;

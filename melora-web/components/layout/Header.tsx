@@ -19,9 +19,9 @@ export default function Header() {
   const fetchNotifications = async () => {
     try {
       const res: any = await axiosClient.get("/notifications");
-      setNotifications(res?.data?.data || res?.data || []);
-    } catch (error) {
-      console.error("Failed to fetch notifications");
+      const list = Array.isArray(res) ? res : (res?.data ?? []);
+      setNotifications(Array.isArray(list) ? list : []);
+    } catch {
     }
   };
 
